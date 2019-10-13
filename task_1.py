@@ -1,12 +1,15 @@
 import json
+import xmlify
 
-import dicttoxml
 
-rooms_path = input('Enter your full path to rooms.json: ')
+rooms_path = input('Enter your path to rooms.json: ')
 rooms_path += "/rooms.json"
-students_path = input('Enter your full path to students.json: ')
+students_path = input('Enter your path to students.json: ')
 students_path += "/students.json"
-doc_type = input('Enter formate of output file (json or xml): ')
+students_in_rooms_path = input('Enter your path to save student_in_rooms file: ')
+doc_type = input('Enter the type of file: ')
+students_in_rooms_path += ("/students_in_rooms." + doc_type)
+
 
 with open(rooms_path, "r") as rooms_json:
     rooms = json.load(rooms_json)
@@ -14,22 +17,16 @@ with open(rooms_path, "r") as rooms_json:
 with open(students_path, "r") as students_json:
     students = json.load(students_json)
 
-stud_list = []
-
 for room in rooms:
-    for student in students:
-        if int(student["room"]) == int(room["id"]):
-            stud_list.append(student["name"])
-    dict_stud = {
-        'id': room['id'],
-        'name': room['name'],
-        'students': stud_list
-    }
-    if doc_type == 'json':
-        with open("student_in_rooms.json", "a") as write_file:
-            json.dump(dict_stud, write_file, sort_keys=True, indent=4)
-    else:
-        with open("student_in_rooms.xml", "a") as write_file:
-            xml = dicttoxml.dicttoxml(dict_stud)
-            write_file.write(str(xml))
-    stud_list.clear()
+    room['students'] = []
+
+for student in students:
+    room_id = student['room']
+    rooms[room_id]['students'].append(student)
+
+if doc_type == ("json"):
+    with open(students_in_rooms_path, 'w') as f:
+        json.dump(rooms, f, indent=4)
+else:
+    with open(students_in_rooms_path, "w") as f:
+        f.write(xmlify.dumps(rooms))
