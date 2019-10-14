@@ -22,7 +22,7 @@ for room in rooms:
 
 for student in students:
     room_id = student['room']
-    rooms[room_id]['students'].append(student)
+    rooms[room_id]['students'].append(student['name'])
 
 if doc_type == ("json"):
     with open(students_in_rooms_path, 'w') as f:
